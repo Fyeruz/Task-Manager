@@ -13,7 +13,6 @@ app.use(express.json());
 
 // Connect to MongoDB
 console.log("Attempting to connect to MongoDB...");
-console.log("MongoDB URI:", process.env.MONGODB_URI ? "Present" : "Missing");
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -23,7 +22,13 @@ mongoose
   .then(() => console.log("✅ SUCCESS: Connected to MongoDB Atlas"))
   .catch((err) => {
     console.log("❌ MongoDB connection failed:", err.message);
-    process.exit(1); // Stop the server if MongoDB fails
+    console.log("🔄 Retrying in 5 seconds...");
+    setTimeout(() => {
+      mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+    }, 5000);
   });
 
 // User Schema
